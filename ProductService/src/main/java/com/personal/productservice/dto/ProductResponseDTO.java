@@ -5,10 +5,10 @@ import lombok.Data;
 
 @Data
 public class ProductResponseDTO {
-    Long productId;
-    String productTitle;
-    String productDescription;
-    String productCategory;
-    String image;
-    Rating rating;
+    private Long productId;
+    private String productTitle;
+    private String productDescription;
+    private CategoryResponseDTO productCategory;
+    private String image;
+    private Rating rating;
 }

@@ -9,12 +9,7 @@ import org.springframework.boot.web.client.RestTemplateBuilder;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.lang.Nullable;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.RequestCallback;
-import org.springframework.web.client.ResponseExtractor;
-import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.List;
@@ -23,13 +18,12 @@ import java.util.Objects;
 import static com.personal.productservice.utility.HttpUtil.putForEntity;
 
 @Service
-public class ProductService implements IProductService {
-
+public class FakeStoreProductService implements IProductService {
 
     private final RestTemplateBuilder builder;
 
     @Autowired
-    public ProductService(RestTemplateBuilder builder) {
+    public FakeStoreProductService(RestTemplateBuilder builder) {
         this.builder = builder;
     }
     @Override
@@ -42,7 +36,7 @@ public class ProductService implements IProductService {
                 restTemplate.getForEntity("https://fakestoreapi.com/products/{productId}",
                         FakeStoreProductResponse.class, productId);
 
-        return ProductMapper.getProductFromFakeStoreResponse(dto.getBody());
+        return ProductMapper.getProductFromFakeStoreResponse(Objects.requireNonNull(dto.getBody()));
     }
 
     @Override
@@ -59,7 +53,7 @@ public class ProductService implements IProductService {
     public Product createProduct(Product product) {
         RestTemplate restTemplate = builder.build();
         HttpEntity<Product> requestEntity = new HttpEntity<>(product);
-        ResponseEntity<FakeStoreProductResponse> responseEntity = restTemplate.postForEntity("http://fakestoreapi.com/products", requestEntity,
+        ResponseEntity<FakeStoreProductResponse> responseEntity = restTemplate.postForEntity("https://fakestoreapi.com/products", requestEntity,
                 FakeStoreProductResponse.class);
         return ProductMapper.getProductFromFakeStoreResponse(Objects.requireNonNull(responseEntity.getBody()));
     }
@@ -73,7 +67,7 @@ public class ProductService implements IProductService {
         }
         FakeStoreProductResponse requestEntity = new FakeStoreProductResponse();
         requestEntity.setTitle(existingProduct.getTitle());
-        requestEntity.setCategory(existingProduct.getCategory());
+        //requestEntity.setCategory(existingProduct.getCategory());
         requestEntity.setDescription(existingProduct.getDescription());
         ResponseEntity<FakeStoreProductResponse> responseEntity = putForEntity(HttpMethod.PUT, "http://fakestoreapi.com/products/{productId}",
                 requestEntity, FakeStoreProductResponse.class, productId);
